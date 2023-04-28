@@ -1,0 +1,42 @@
+-- for finding average grade given by a certain professor
+
+SELECT p.professors_name, AVG(CAST(grades_percentage AS UNSIGNED)) AS 'Average Grade Given'
+FROM professors p
+JOIN enrollment e
+ON e.enrollment_professor_id = p.professors_id
+JOIN courses c 
+ON c.courses_id = e.enrollment_course_id
+JOIN grades g
+ON g.grades_courses_id = c.courses_id
+GROUP BY p.professors_name
+
+
+-- Show best grade from each student
+SELECT s.students_name, MAX(CAST(grades_percentage AS UNSIGNED)) AS 'Best Grade'
+FROM grades g
+JOIN students s
+ON s.students_id = g.grades_students_id
+GROUP BY g.grades_students_id
+
+
+-- Group students by courses_subject
+SELECT s.students_name, c.courses_subject
+FROM students s
+JOIN enrollment e
+ON e.enrollment_student_id = s.students_id
+JOIN courses c
+ON c.courses_id = e.enrollment_course_id
+
+-- Show average grade in each course, sorted by hardest course to easiest(by grade average)
+SELECT c.courses_subject, AVG(CAST(g.grades_percentage AS UNSIGNED)) AS 'Average grade in course'
+FROM courses c
+JOIN grades g
+ON c.courses_id = g.grades_courses_id
+GROUP BY courses_subject
+ORDER BY AVG(CAST(g.grades_percentage AS UNSIGNED)) ASC
+
+-- Show how many times a combination of student and professor shows up with the highest number showing first
+SELECT enrollment_student_id, enrollment_professor_id, COUNT(*)
+FROM enrollment
+GROUP BY enrollment_student_id, enrollment_professor_id
+ORDER BY COUNT(*) DESC
